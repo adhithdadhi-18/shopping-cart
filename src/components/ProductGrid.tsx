@@ -8,6 +8,8 @@ type ProductGridProps = {
   errorMessage?: string
   onRetry: () => void
   onAddToCart: (product: Product) => void
+  hasActiveFilters: boolean
+  onClearFilters: () => void
 }
 
 export default function ProductGrid({
@@ -17,6 +19,8 @@ export default function ProductGrid({
   errorMessage,
   onRetry,
   onAddToCart,
+  hasActiveFilters,
+  onClearFilters,
 }: ProductGridProps) {
   if (isLoading) {
     return (
@@ -45,7 +49,22 @@ export default function ProductGrid({
 
   if (products.length === 0) {
     return (
-      <p className="py-16 text-center text-gray-600">No products found.</p>
+      <div className="py-16 text-center text-gray-600">
+        <p>
+          {hasActiveFilters
+            ? 'No products match your search or filters.'
+            : 'No products available.'}
+        </p>
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          >
+            Clear all filters
+          </button>
+        )}
+      </div>
     )
   }
 
