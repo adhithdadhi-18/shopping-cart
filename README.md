@@ -1,75 +1,75 @@
-# React + TypeScript + Vite
+# Shopping Cart Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Overview
+A responsive shopping cart app built as an internship assignment. Users can browse products from a public API, search and filter them, manage a cart, and complete a 3-step checkout (Cart Review, Shipping, Payment Summary). There is no backend and no real payment.
 
-Currently, two official plugins are available:
+- Live demo: https://shopping-cart-eight-livid.vercel.app
+- Repository: https://github.com/adhithdadhi-18/shopping-cart.git
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Technologies Used
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- pnpm
+- Zustand (cart state, with `persist` middleware)
+- TanStack Query (product fetching, caching, loading and error states)
+- Zod (API response and shipping form validation)
+- localStorage (cart persistence)
+- Vitest (unit tests for cart calculations)
 
-## React Compiler
+## Setup Instructions
+1. Install Node.js 20 or newer and pnpm (`npm install -g pnpm`).
+2. Clone the repository:
+   ```
+   git clone <your GitHub link>
+   cd shopping-cart
+   ```
+3. Install dependencies:
+   ```
+   pnpm install
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Commands
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Type-check and create a production build |
+| `pnpm preview` | Preview the production build locally |
+| `pnpm lint` | Run ESLint |
+| `pnpm test` | Run unit tests |
 
-## Expanding the ESLint configuration
+## API Used
+[DummyJSON Products](https://dummyjson.com/products) (`https://dummyjson.com/products?limit=100`). The response is validated with Zod before use.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features Completed
+- Product listing in a responsive grid (image, title, category, price, rating, Add to Cart)
+- Loading, error (with retry), empty, and success states
+- Search by title, filter by category, filter by price range, and clear all filters (custom `useProductFilters` hook)
+- Cart: add, remove, increase, decrease, clear (quantity min 1, max 5, buttons disabled at limits)
+- Cart summary: item list, quantities, line totals, subtotal, tax, discount, final total
+- Cart item count in the header
+- Minimum checkout of $10, with checkout disabled and an explanatory message
+- Cart persistence in localStorage via Zustand `persist`
+- 3-step checkout: Cart Review, Shipping, Payment Summary, where the user can only continue when the current step is valid
+- Shipping form built with React state and Zod validation (no form library), with errors shown next to each field
+- Read-only Payment Summary; Place Order shows a success message and clears the cart
+- Unit tests for `calculateTotals`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Calculation Rules (assumptions)
+- Subtotal = sum of price x quantity
+- Discount = 10% of the subtotal, only when the subtotal is greater than $100
+- Tax = 5% of the subtotal (calculated before the discount)
+- Final total = subtotal - discount + tax
+- Minimum checkout value is $10, checked against the subtotal
+- Amounts are rounded to 2 decimals
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+## Known Limitations
+- Phone number is only checked as required, with no format validation
+- Persisted localStorage data is not re-validated on load
+- Orders are not sent anywhere (no backend or payment gateway)
+- If the minimum price is greater than the maximum, no products are shown
+- Cart prices are saved at the time of adding, so they won't update if the API price changes
+- No pagination; all 100 products load at once
+- Refreshing during checkout returns to the shop view (checkout step is not persisted)
+- Limited automated tests (cart calculations only)
